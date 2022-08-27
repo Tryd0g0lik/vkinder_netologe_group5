@@ -66,11 +66,14 @@
 ## .env
 
 **.env - Настройка окружения** 
-Переименуйте файл c настройками .env_example -> .env и настройте задайте ваши параметры
+>Переименуйте файл c настройками .env_example -> .env и настройте задайте ваши параметры
 > 
 >DSN=postgresql://postgres:password@localhost:5432/BOT_DB - подключение к БД
+>
 >TOKEN_BOT=8b6d106...b4585c - Токен полученный при создании бота
+>
 >TOKEN_API_VK=vk1.a.PwtBfYyVT...mZ - токен доступа для работы с API VK
+>
 >VERSION_API_VK=5.131 - версия API VK
 
 
