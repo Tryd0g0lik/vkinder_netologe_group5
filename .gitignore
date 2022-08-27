@@ -1,6 +1,7 @@
+
 .git/*
 .idea/*
 client/*
 main.py
+.idea
 
-sergeyRO/*
