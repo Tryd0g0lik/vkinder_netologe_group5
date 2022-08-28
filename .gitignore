@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 .git/*
 .idea/*
 client/*
 main.py
 
 sergeyRO/*
+=======
+.idea
+>>>>>>> b6237abe1c602ba92586d752bacad4335c22ef4b

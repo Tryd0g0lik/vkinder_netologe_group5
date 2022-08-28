@@ -1,5 +1,3 @@
-#### Hello World
-
 ## Требования
  - Создать группу в Вконтакте, от имени которой будет общаться разрабатываемый бот.
 [Как настроить группу для бота и получить токен](https://github.com/netology-code/adpy-team-diplom/blob/main/group_settings.md)
