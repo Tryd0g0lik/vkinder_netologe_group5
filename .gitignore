@@ -1,10 +1,6 @@
-<<<<<<< HEAD
 .git/*
-.idea/*
 client/*
-main.py
-
-sergeyRO/*
-=======
+.env
+__pycache__
 .idea
->>>>>>> b6237abe1c602ba92586d752bacad4335c22ef4b
+
