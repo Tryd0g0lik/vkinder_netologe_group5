@@ -71,6 +71,7 @@ menu = {
             }
         ]
     ]}
+command = {'start', 'help', 'next', 'back', 'search', 'filter', 'favorites', 'blacklist'}
 
 
 def send_menu(id):
@@ -84,35 +85,92 @@ def send_menu(id):
     )
 
 for event in longpoll.listen():
-    print(event)
     if event.type == VkBotEventType.MESSAGE_NEW:
-        if event.object.message['text'] == 'Кнопка':
-            #print(f"------------------------------------>{event.object.message['from_id']}")
-            keyboard = VkKeyboard(one_time=False)
-            keyboard.add_callback_button(label='Добавить красного ', color=VkKeyboardColor.PRIMARY, payload={"type":"coll"})
-            vk.messages.send(
-                peer_id=event.object.message['from_id'],
-                random_id=get_random_id(),
-                keyboard=keyboard.get_keyboard(),
-                message='Пример клавиатуры'
-            )
+        # if event.object.message['text'] == 'start':
+        #     #print(f"------------------------------------>{event.object.message['from_id']}")
+        #     keyboard = VkKeyboard(one_time=False)
+        #     keyboard.add_callback_button(label='Добавить красного ', color=VkKeyboardColor.PRIMARY, payload={"type":"coll"})
+        #     vk.messages.send(
+        #         peer_id=event.object.message['from_id'],
+        #         random_id=get_random_id(),
+        #         keyboard=keyboard.get_keyboard(),
+        #         message='Пример клавиатуры'
+        #     )
+        if event.object.message['text'].lower() in command:
+            if event.object.message['text'] == 'start':
+                keyboard = VkKeyboard(one_time=False)
+                keyboard.add_callback_button(label='🔍 ПОИСК', color=VkKeyboardColor.SECONDARY, payload={"type": "search"})
+                keyboard.add_line()
+                keyboard.add_callback_button(label='⭐ Избранные', color=VkKeyboardColor.POSITIVE, payload={"type": "favorites"})
+                keyboard.add_callback_button(label='✘ Чёрный список', color=VkKeyboardColor.NEGATIVE, payload={"type": "blacklist"})
+                keyboard.add_line()
+                keyboard.add_callback_button(label='⚙ Фильтр', color=VkKeyboardColor.SECONDARY, payload={"type": "filter"})
+                keyboard.add_callback_button(label='🚑 HELP', color=VkKeyboardColor.PRIMARY, payload={"type": "help"})
 
+
+                vk.messages.send(
+                    peer_id=event.object.message['from_id'],
+                    random_id=get_random_id(),
+                    keyboard=keyboard.get_keyboard(),
+                    message='Привет, бродяга! Для продолжения работы используй кнопки действия!'
+                )
+
+            elif event.object.message['text'] == 'help':
+                ...
+            elif event.object.message['text'] == 'next':
+                ...
+            elif event.object.message['text'] == 'back':
+                ...
+            elif event.object.message['text'] == 'search':
+                ...
+            elif event.object.message['text'] == 'filter':
+                ...
+            elif event.object.message['text'] == 'favorites':
+                ...
+            elif event.object.message['text'] == 'blacklist':
+                ...
+            elif event.object.message['text'] == 'setting_filter':
+                ...
     elif event.type == VkBotEventType.MESSAGE_EVENT:
-        print(event)
-        print(f'----------------------------->TYT')
-        b = VkKeyboard()
-        vk.messages.send(
-            peer_id=event.object.user_id,
-            random_id=get_random_id(),
-            keyboard=b.get_empty_keyboard(),
-            message='Пример удаления клавиатуры'
-        )
-        keyboard = VkKeyboard(one_time=False)
-        keyboard.add_callback_button(label='Добавить СИНИЙ', color=VkKeyboardColor.PRIMARY,
-                                     payload={"type": "coll"})
-        vk.messages.send(
-            peer_id=event.object.user_id,
-            random_id=get_random_id(),
-            keyboard=keyboard.get_keyboard(),
-            message='Синяяя кнопка'
-        )
+        if event.object.payload['type'] == 'help':
+            print(event)
+            vk.messages.send(
+                user_id=event.object.user_id,
+                random_id=get_random_id(),
+                message="Справка по командам:\n"
+                        "help - справка\n"
+                        "start - начать работу с ботом\n"
+                        "search - поиск пользователей по заданному фильтру\n"
+                        "filter - настройка фильтра поиска\n"
+                        "favorites - список избранных пользователей\n"
+                        "blacklist - список пользователей попавших в черный список"
+            )
+        else:
+            print(event)
+            print(f'----------------------------->TYT')
+            # clear_menu = VkKeyboard()
+            # vk.messages.send(
+            #     peer_id=event.object.user_id,
+            #     random_id=get_random_id(),
+            #     keyboard=clear_menu.get_empty_keyboard(),
+            #     message='1111'
+            # )
+            print("<---------TYT------------>")
+            print(event)
+            print(event.object.payload)
+            print(event.object.event_id)
+            vk.messages.sendMessageEventAnswer(
+                event_id=event.object.event_id,
+                user_id=event.object.user_id,
+                peer_id=event.object.peer_id,
+                event_data=json.dumps(event.object.payload)
+            )
+        # keyboard = VkKeyboard(one_time=False)
+        # keyboard.add_callback_button(label='Добавить СИНИЙ', color=VkKeyboardColor.PRIMARY,
+        #                              payload={"type": "coll"})
+        # vk.messages.send(
+        #     peer_id=event.object.user_id,
+        #     random_id=get_random_id(),
+        #     keyboard=keyboard.get_keyboard(),
+        #     message='Синяяя кнопка'
+        # )
