@@ -1,0 +1,8 @@
+requests
+pytest
+pytest-cov
+sqlalchemy
+python-dotenv
+vk_api
+
+Psycopg2
