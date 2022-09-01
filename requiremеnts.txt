@@ -2,7 +2,7 @@ requests
 pytest
 pytest-cov
 sqlalchemy
+sqlalchemy_utils
 python-dotenv
 vk_api
-
 Psycopg2
