@@ -10,8 +10,9 @@ if __name__ == "__main__":
 
 
     # with Session(bind="postgres") as session:
-  test = sqlt(dbname = "client")
-  test.createdb()
+  test = sqlt(dbname = "tests5")
+
+  test.templateTable()
 
 
 
