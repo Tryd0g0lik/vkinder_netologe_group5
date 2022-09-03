@@ -18,188 +18,60 @@ if __name__ == '__main__':
 
     _vk = vk_api.VkApi(token=TOKEN_API_VK)
     vk100 = _vk.get_api()
-    print(vk100.users.search(q='Сергей Рогачевский', city=99))
+    s = vk100.users.search(q='Сергей Рогачевский', city=99)
+    print(s)
+    for item, v in s.items():
+        print(f"{item}      {v}")
+        if item == 'items':
+            for ii in v:
+                print(ii)
+                print(ii['id'])
+    print('===============================')
+    print(s['items'][0]['first_name'])
 
-    vk_session = vk_api.VkApi(token=TOKEN_BOT)
-    longpool = VkLongPoll(vk_session)
-    vk = vk_session.get_api()
+    print('----------------------------------------------------------------------------------')
 
-    menu = {
-        "one_time": False,
-        "buttons": [
+    count = 10
+    filter = (99, 1, 6, 20, 23)
+    arr_user = {}
+    list_users = []
+    res1 = vk100.users.search(
+        city=filter[0], sex=filter[1],
+        status=filter[2], age_from=filter[3],
+        age_to=filter[4], has_photo=True, count=count)
+    print(f"RES    ======>    {res1}")
+    print('----------------------------------------------------------------------------------')
 
-                [
-                    {
-                        "action": {
-                            "type": "callback",
-                            "payload": {'type': 'my_own_100500_type_edit'},
-                            "label": "ПОИСК"
-                        },
-                        "color": "primary"
-                    },
-                    {
-                        "action": {
-                            "type": "text",
-                            "payload": {"button": "2"},
-                            "label": "Избранные"
-                        },
-                        "color": "positive"
-                    },
-                # < span style = 'color:red' >❤ < / span >
-                    {
-                    "action": {
-                        "type": "text",
-                        "payload": "{\"button\": \"1\"}",
-                        "label": "Черный список"
-                    },
-                    "color": "negative"
-                }
-                    # < span style = 'color:black' >✘ < / span >
-                ],
-                [
-                    {
-                    "action": {
-                        "type": "text",
-                        "payload": "{\"button\": \"2\"}",
-                        "label": "HELP"
-                    },
-                    "color": "secondary"
-                },
-                    {
-                    "action": {
-                        "type": "text",
-                        "payload": "{\"button\": \"2\"}",
-                        "label": "Настройка поиска"
-                    },
-                    "color": "secondary"
-                }
-                ]
-        ]}
+    for user in res1['items']:
+        if user['is_closed'] is not True:
+            res = vk100.photos.get(
+                owner_id=user['id'],
+                album_id='profile',
+                extended=True,
+                photo_sizes=True
+            )
 
-    def send_menu(id):
-        keyboard = VkKeyboard(one_time=True, inline=False)
-        keyboard.keyboard = menu
-        vk.messages.send(
-            peer_id=id,
-            random_id=get_random_id(),
-            keyboard=keyboard.get_keyboard(),
-            message='Привет, бродяга! Для продолжения работы используй кнопки действия!'
-        )
+            arr_photo = {}
+            for photo in res['items']:
+                if len(arr_photo) < 3:
+                    arr_photo[photo['id']] = photo['likes']['count']
+                else:
+                    for item, val in arr_photo.items():
+                        if photo['likes']['count'] > val:
+                            del arr_photo[item]
+                            arr_photo[photo['id']] = photo['likes']['count']
+                            break
+            l=[]
+            for photo in arr_photo.keys():
+                l.append(f"photo{user['id']}_{photo}")
 
+            arr_user1 = {}
+            arr_user1['id_user'] = user['id']
+            arr_user1['first_name'] = user['first_name']
+            arr_user1['last_name'] = user['last_name']
+            arr_user1['photo'] = l
+            list_users.append(arr_user1)
 
-    def send_some_msg(id, some_text):
-        vk_session.method("messages.send", {"user_id": id, "message": some_text, "random_id": 0})
-
-    for event in longpool.listen():
-        print(event.__dict__)
-        print(event.__class__)
-        if event.type == VkEventType.MESSAGE_NEW:
-            if event.to_me:
-                msg = event.text.lower()
-                id = event.user_id
-                msg_id = event.peer_id
-
-                if msg == "start":
-                    #send_some_msg(id, "")
-                    send_menu(id)
-                    #vk_session.method("messages.send", {"user_id": id, "attachment": 'photo5527523_412507362,photo5527523_412507362' ,"random_id": 0})
-                    #vk_session.method("messages.send",{"user_id": id, "attachment": 'photo{id}_{number_photo}}', "random_id": 0})
-                    # keyboard = VkKeyboard(one_time=False)
-                    # keyboard.add_callback_button(label='Добавить красного ', color=VkKeyboardColor.PRIMARY,
-                    #                                payload={"type": "my_own_100500_type_edit"})
-                    # vk.messages.send(
-                    #     peer_id=id,
-                    #     random_id=get_random_id(),
-                    #     keyboard=keyboard.get_keyboard(),
-                    #     message='Пример клавиатуры'
-                    # )
-
-
-
-
-                if msg == "red":
-                    ...
-
-    # CALLBACK_TYPES = ('show_snackbar', 'open_link', 'open_app')
-    # f_toggle: bool = False
-    # APP_ID = 51411238  # id IFrame приложения
-    # OWNER_ID = 5527523  # id владельца приложения
-    # settings = dict(one_time=False, inline=True)
-    # # №1. Клавиатура с 3 кнопками: "показать всплывающее сообщение", "открыть URL" и изменить меню (свой собственный тип)
-    # keyboard_1 = VkKeyboard(**settings)
-    # # pop-up кнопка
-    # keyboard_1.add_callback_button(label='Покажи pop-up сообщение', color=VkKeyboardColor.SECONDARY,
-    #                                payload={"type": "show_snackbar", "text": "Это исчезающее сообщение"})
-    # keyboard_1.add_line()
-    # # кнопка с URL
-    # keyboard_1.add_callback_button(label='Откртыть Url', color=VkKeyboardColor.POSITIVE,
-    #                                payload={"type": "open_link", "link": "https://vk.com/dev/bots_docs_5"})
-    # keyboard_1.add_line()
-    # # кнопка по открытию ВК-приложения
-    # keyboard_1.add_callback_button(label='Открыть приложение', color=VkKeyboardColor.NEGATIVE,
-    #                                payload={"type": "open_app", "app_id": APP_ID, "owner_id": OWNER_ID,
-    #                                         "hash": "anything_data_100500"})
-    # keyboard_1.add_line()
-    # # кнопка переключения на 2ое меню
-    # keyboard_1.add_callback_button(label='Добавить красного ', color=VkKeyboardColor.PRIMARY,
-    #                                payload={"type": "my_own_100500_type_edit"})
-    #
-    # # №2. Клавиатура с одной красной callback-кнопкой. Нажатие изменяет меню на предыдущее.
-    # keyboard_2 = VkKeyboard(**settings)
-    # # кнопка переключения назад, на 1ое меню.
-    # keyboard_2.add_callback_button('Назад', color=VkKeyboardColor.NEGATIVE, payload={"type": "my_own_100500_type_edit"})
-    #
-    #
-    #
-    # vk_session = vk_api.VkApi(token=TOKEN_BOT, api_version=VERSION_API_VK)
-    # vk = vk_session.get_api()
-    # longpoll = VkBotLongPoll(vk_session, group_id=215581501)
-    # for event in longpoll.listen():
-    #     # отправляем меню 1го вида на любое текстовое сообщение от пользователя
-    #     if event.type == VkBotEventType.MESSAGE_NEW:
-    #         keyboard_1 = VkKeyboard(one_time=False)
-    #         print(event.obj.client_info)
-    #         if event.obj.message['text'] != '':
-    #             if event.from_user:
-    #                 # Если клиент пользователя не поддерживает callback-кнопки,
-    #                 # нажатие на них будет отправлять текстовые
-    #                 # сообщения. Т.е. они будут работать как обычные inline кнопки.
-    #                 if 'callback' not in event.obj.client_info['button_actions']:
-    #                     print(f'Клиент {event.obj.message["from_id"]} не поддерж. callback')
-    #
-    #                 vk.messages.send(
-    #                                     peer_id=event.obj.message['from_id'],
-    #                                     random_id=get_random_id(),
-    #                                     keyboard=keyboard_1.get_keyboard(),
-    #                                     message='Пример клавиатуры'
-    #                                 )
-    #                 # vk.messages.send(
-    #                 #     user_id=event.obj.message['from_id'],
-    #                 #     random_id=get_random_id(),
-    #                 #     peer_id=event.obj.message['from_id'],
-    #                 #     keyboard=keyboard_1.get_keyboard(),
-    #                 #     message=event.obj.message['text'])
-    #     # обрабатываем клики по callback кнопкам
-    #     elif event.type == VkBotEventType.MESSAGE_EVENT:
-    #         # если это одно из 3х встроенных действий:
-    #         if event.object.payload.get('type') in CALLBACK_TYPES:
-    #             # отправляем серверу указания как какую из кнопок обработать. Это заложено в
-    #             # payload каждой callback-кнопки при ее создании.
-    #             # Но можно сделать иначе: в payload положить свои собственные
-    #             # идентификаторы кнопок, а здесь по ним определить
-    #             # какой запрос надо послать. Реализован первый вариант.
-    #             r = vk.messages.sendMessageEventAnswer(
-    #                 event_id=event.object.event_id,
-    #                 user_id=event.object.user_id,
-    #                 peer_id=event.object.peer_id,
-    #                 event_data=json.dumps(event.object.payload))
-    #         # если это наша "кастомная" (т.е. без встроенного действия) кнопка, то мы можем
-    #         # выполнить edit сообщения и изменить его меню. Но при желании мы могли бы
-    #         # на этот клик открыть ссылку/приложение или показать pop-up. (см.анимацию ниже)
-    #         elif event.object.payload.get('type') == 'my_own_100500_type_edit':
-    #             last_id = vk.messages.edit(
-    #                 peer_id=event.obj.peer_id,
-    #                 message='ola',
-    #                 conversation_message_id=event.obj.conversation_message_id,
-    #                 keyboard=(keyboard_1 if f_toggle else keyboard_2).get_keyboard())
-    #             f_toggle = not f_toggle
+        arr_user['count'] = res1['count']
+        arr_user['users'] = list_users
+    print(arr_user)
