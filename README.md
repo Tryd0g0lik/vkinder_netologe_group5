@@ -72,6 +72,8 @@
 >
 >TOKEN_BOT=8b6d106...b4585c - Токен полученный при создании бота
 >
+>GROUP_ID=21...1 - ID вашей группы в контакте
+>
 >TOKEN_API_VK=vk1.a.PwtBfYyVT...mZ - токен доступа для работы с API VK
 >
 >VERSION_API_VK=5.131 - версия API VK
