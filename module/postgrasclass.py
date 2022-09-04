@@ -3,11 +3,22 @@ from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy import create_engine, MetaData, Table, String, Integer, Text, Column, CheckConstraint
 from sqlalchemy.ext.declarative import declarative_base
 
+
 class sqlTasks():
   def __init__(self, dbname,  password = "nlo7"):
     """
     :param dbname: Receiving database-name and creating base.
     :param password: 'password' variable has from password default the 'nlo7'
+
+    def __exists() - checking:
+      - True if dataBase-name be exists
+      - False if not exists
+    def __connectedPosgres() - connecting with a 'db-postgres'
+    def __createdb() - Build new data-base if it not exists
+    def connectionNewDB() - The buil connection for a new database.
+    def templateTable() - The created templates for a new-db and returned tables from this's new db
+    :return: True or False
+
     """
 
     self.dbname = dbname
@@ -18,15 +29,6 @@ class sqlTasks():
     Basic requests the db-postgres default
     """
     return create_engine("postgresql://postgres:%s@localhost:5432/postgres" % (self.password, ))
-
-  def __exists(self):
-    """
-    :param dbname: dataBase-name checking:
-      - True if dataBase-name be exists
-      - False if not exists
-    :return: True or False
-    """
-    return database_exists('postgresql://postgres:%s@localhost:5432/%s' % (self.password, self.dbname ))
 
   def __createdb(self):
     """
@@ -41,9 +43,28 @@ class sqlTasks():
     if not sqlTasks.__exists(self):
       create_database(url)
       print("Created database!")
+    else:
+      print("""DataBase exists. Session is closing""")
+      conn.close()
+
+      return
+
+      exit()
+
     conn.close()
     print("Session closed!")
+
+
     return
+
+  def __exists(self):
+    """
+    :param dbname: dataBase-name checking:
+      - True if dataBase-name be exists
+      - False if not exists
+    :return: True or False
+    """
+    return database_exists('postgresql://postgres:%s@localhost:5432/%s' % (self.password, self.dbname ))
 
   def connectionNewDB(self):
 
