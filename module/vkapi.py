@@ -1,6 +1,6 @@
-import os
 import vk_api
-import json
+import vk
+import os
 
 def auth_handler():
     """ При двухфакторной аутентификации вызывается эта функция.
@@ -14,13 +14,12 @@ def auth_handler():
     return key, remember_device
 
 
-def main(login, password):
+def mainAutor(login, password):
     """ Пример обработки двухфакторной аутентификации """
-
-
     vk_session = vk_api.VkApi(
         login, password,
-        # функция для обработки двухфакторной аутентификации
+        scope = "FRIEND.STORIES.MESSAGES",
+    # функция для обработки двухфакторной аутентификации
         auth_handler=auth_handler
     )
 
@@ -29,33 +28,34 @@ def main(login, password):
     except vk_api.AuthError as error_msg:
         print(error_msg)
         return
+    return vk_session
 
-    # ...
+
 
 def renameFile():
     os.rename("vk_config.v2.json", "vk_config.json")
     return
 
 
-if __name__ == '__main__':
-    if not os.path.exists("vk_config.json"):
-        if not os.path.exists("vk_config.v2.json"):
-            login, passw = input("Login: "), input("Passw: ")
-            main(login, passw)
-            vk_login = vk_api.VkApi(login, passw)
-            vk_login.token['access_token']
+class apiFunction:
+    def __init__(self, token, id):
+        """
+        :param token: Key for work in vk througth user-profile
+        :param id: User id
 
-        if not os.path.exists("vk_config.json"):
-            renameFile()
-    else:
-        if not os.path.exists("vk_config.json"):
-            renameFile()
+        """
+        self.token = token
+        self.id = id
 
-    with open("vk_config.json", "r") as vkv2:
-        dict_var = json.load(vkv2)
-        token = dict_var[login]["token"]["app6222115"]["scope_140492255"]\
-            ["access_token"]
-        id_user = dict_var[login]["token"]["app6222115"]["scope_140492255"]\
-                  ["user_id"]
+    def getUser(self):
+        """
+        :return: data-user
+        """
+
+
+        return
+
+
+
 
 

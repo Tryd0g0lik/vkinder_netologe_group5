@@ -1,7 +1,8 @@
 import requests
+import os
 # import vk_api
 
-import tokenVk
+
 
 """?&"""
 
@@ -18,31 +19,23 @@ class GKUser:
     # self.headers = {
     #   "redirect_url": "http://oauth.vk.com/blank.html"
     # }
-    self.header = {
 
-      "pass": "OBD0P1QEk47NsnO4NhAkVaEROVCCBN",
-      "email": "work80@mail.ru"
-    }
+    client_secret = os.environ("client_secret")
     self.params = {
       "client_id" : "51416002",
       "scope" : "messages.photos.friends.stories.pages.groups",
       "response_type" : "code",
       "display" : "page",
       "redirect_url": "https://oauth.vk.com/blank.html",
-      "client_secret": "ZlKhq1rIGnRGDBvCFdWM",
+      "client_secret" : client_secret,
 
       "v" : "5.131"
     }
   def autorisation(self):
-    var_requests = requests.get(url=self.urlAuthorize, params=self.params, headers=self.header) #,
-    # headers=self.headers
-    # var_requests = requests.get("""https://oauth.vk.com/authorize/?client_id=51416002&scope=messages.photos.friends.stories.pages.groups&response_type=token&display=page&redirect_url=https://oauth.vk.com/blank.html&v=5.131""")
-    self.user_token =var_requests #.url #.split("=").pop(-2)[ : -2]
-    print(self.user_token)
+    var_requests = requests.get(url=self.urlAuthorize, params=self.params) #,
 
-    # https://oauth.vk.com/authorize/?client_id=51416002&scope=messages.photos.friends.stories.pages.groups&response_type=code&display=popup&redirect_url=https://oauth.vk.com/blank.html&v=5.131
-    # https://oauth.vk.com/authorize?client_id=1&redirect_uri=http://example.com/callback&scope=12&display=mobile
-    var_requests
+    self.user_token = var_requests
+
     return self.user_token
 
 class Bases:
