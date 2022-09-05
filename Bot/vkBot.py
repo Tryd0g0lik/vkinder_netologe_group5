@@ -1,9 +1,7 @@
-import json
 import vk_api
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
-from vk_api.utils import get_random_id
-from config import DSN, TOKEN_BOT, TOKEN_API_VK, VERSION_API_VK, GROUP_ID
-from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
+from config import TOKEN_BOT, GROUP_ID
+from vk_api.bot_longpoll import VkBotLongPoll
 from API_VK.api import api
 
 class vkBot():
@@ -11,6 +9,11 @@ class vkBot():
         self.vk_session = vk_api.VkApi(token=TOKEN_BOT)
         self.longpoll = VkBotLongPoll(self.vk_session, GROUP_ID)
         self.vk = self.vk_session.get_api()
+
+        self.offset = api().offset
+        self.count_users = 0
+        self.filter = (99, 2, 6, 20, 20)
+        self.id_user = 0
 
     def menu_keyboard(self):
         keyboard = VkKeyboard(one_time=False)
@@ -70,3 +73,94 @@ class vkBot():
                   f"favorites - список избранных пользователей\n" \
                   f"blacklist - список пользователей попавших в черный список"
         return message
+
+    def bot_command(self, event_command, event, peer_id, random_id):
+        offset = self.offset
+        count_users = self.count_users
+        filter = self.filter
+        id_user = self.id_user
+
+        if event_command == 'start':
+            user = api().user(event.object.message['from_id'])
+            keyboard = self.menu_keyboard()
+            message = f'Привет, {user["first_name"]}! Для продолжения работы используй кнопки действия!'
+            message_id = self.message(peer_id, random_id, message, keyboard)
+            print(f"Start====>  {message_id}")
+
+        elif event_command == 'help':
+            message = self.bot_help_message()
+            message_id = self.message(peer_id, random_id, message)
+            print(f"HELP====>   {message_id}")
+
+        elif 'search' in event_command:
+            if event_command == 'search':
+                offset = 0
+                command = 'search'
+            elif event_command == 'search_next':
+                if offset > count_users:
+                    offset = count_users
+                else:
+                    offset += 1
+                command = 'search_next'
+            elif event_command == 'search_back':
+                if offset > 0:
+                    offset -= 1
+                    command = 'search_back'
+                else:
+                    offset = 0
+                    command = 'search'
+            users = api().search_users(offset, filter, command)
+            self.offset = users['offset']
+            self.count_users = users["count"]
+            keyboard = self.menu_search()
+            message = f'{users["users"][0]["first_name"]} {users["users"][0]["last_name"]}\n' \
+                      f'https://vk.com/id{users["users"][0]["id_user"]}'
+            attachment = users['users'][0]['photo']
+            message_id = self.message(peer_id, random_id, message, keyboard, attachment)
+            self.id_user = users["users"][0]["id_user"]
+            print(f"SEARCH={command}===> {message_id}")
+
+        elif event_command == 'add_favorites':
+            if id_user != 0:
+                list_favorites = api().insert_favorites(id_user)
+                message = f"Пользователь добавлен в избранные!!!!! В вашем листе {list_favorites}"
+                message_id = self.message(peer_id, random_id, message)
+                print(f"ADD_FAVORITES====>{message_id}")
+
+        elif event_command == 'add_blacklist':
+            if id_user != 0:
+                list_black = api().insert_blacklist(id_user)
+                message = f"Пользователь добавлен в чёрный список!!!!! В вашем листе {list_black}"
+                message_id = self.message(peer_id, random_id, message)
+                print(f"ADD_BLACKLIST====>{message_id}")
+
+        elif event_command == 'filter':
+            message = f"Тип фильтра (Город, Пол, Семейное положение, Возраст с, Возраст по). В данный момент фильтр {filter}"
+            message_id = self.message(peer_id, random_id, message)
+            print(f"FILTER====>{message_id}")
+
+        elif 'filter_setting' in event_command:
+            string = event.object.message['text'].lower().replace("filter_setting", "")
+            new_filter = api().update_filter(string)
+            self.filter = new_filter
+            message = f"Фильтры изменён на {new_filter}!!!!!"
+            message_id = self.message(peer_id, random_id, message)
+            print(f"FILTER_SETTING====>{message_id}")
+
+        elif event_command == 'favorites':
+            message = ''
+            list_favorite = api().view_favorites(peer_id)
+            for item in list_favorite:
+                message += f"{item}\n"
+            message = f"Ваши избранные пользователи {len(list_favorite)}:\n{message}"
+            message_id = self.message(peer_id, random_id, message)
+            print(f"FAVORITES====>{message_id}")
+
+        elif event_command == 'blacklist':
+            message = ''
+            list_blacklist = api().view_blacklist(peer_id)
+            for item in list_blacklist:
+                message += f"{item}\n"
+            message = f"Ваши пользователи из чёрного списка {len(list_blacklist)}:\n{message}"
+            message_id = self.message(peer_id, random_id, message)
+            print(f"BLACKLIST====>{message_id}")

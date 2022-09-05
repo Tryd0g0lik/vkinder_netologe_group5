@@ -1,13 +1,10 @@
 import vk_api
-from vk_api.keyboard import VkKeyboard, VkKeyboardColor
-from vk_api.utils import get_random_id
-from config import DSN, TOKEN_API_VK, VERSION_API_VK
+from config import DSN, TOKEN_API_VK
 
 
 class api:
     favorites = []
     blacklist = []
-    #filters = (99, 2, 6, 20, 20)
     def __init__(self):
         self._vk = vk_api.VkApi(token=TOKEN_API_VK)
         self.vk = self._vk.get_api()
