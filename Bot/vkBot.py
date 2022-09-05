@@ -151,7 +151,7 @@ class vkBot():
             message = ''
             list_favorite = api().view_favorites(peer_id)
             for item in list_favorite:
-                message += f"{item}\n"
+                message += f"https://vk.com/id{item}\n"
             message = f"Ваши избранные пользователи {len(list_favorite)}:\n{message}"
             message_id = self.message(peer_id, random_id, message)
             print(f"FAVORITES====>{message_id}")
@@ -160,7 +160,7 @@ class vkBot():
             message = ''
             list_blacklist = api().view_blacklist(peer_id)
             for item in list_blacklist:
-                message += f"{item}\n"
+                message += f"https://vk.com/id{item}\n"
             message = f"Ваши пользователи из чёрного списка {len(list_blacklist)}:\n{message}"
             message_id = self.message(peer_id, random_id, message)
             print(f"BLACKLIST====>{message_id}")
