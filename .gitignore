@@ -3,5 +3,5 @@ client/*
 .env
 __pycache__
 .idea
-vk_config.json
+module/user_token/vk_config.json
 vk_config.v2.json

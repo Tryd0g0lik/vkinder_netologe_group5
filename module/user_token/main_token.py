@@ -1,7 +1,4 @@
-from module.postgrasclass import sqlTasks as sqlt
-from module.requestsClass import GKUser as gku
-from module.vkapi import auth_handler, mainAutor, renameFile, apiFunction
-import webbrowser
+from module.user_token.vkapi import mainAutor, renameFile
 import os
 import json
 
@@ -30,7 +27,7 @@ if __name__ == "__main__":
         token = dict_var[login]["token"]["app6222115"]["scope_FRIEND.STORIES.MESSAGES"]["access_token"]
         id_user = dict_var[login]["token"]["app6222115"]["scope_FRIEND.STORIES.MESSAGES"]["user_id"]
 
-      with open(".env", "a") as file_env:
+      with open("../../.env", "a") as file_env:
         file_env.write(
           """
 
