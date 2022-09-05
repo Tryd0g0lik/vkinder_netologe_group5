@@ -1,4 +1,4 @@
-from module.user_token.vkapi import mainAutor, renameFile
+from module.user_token.token_api_vk import mainAutor, renameFile
 import os
 import json
 
@@ -32,7 +32,7 @@ if __name__ == "__main__":
           """
 
 # User_token for VK
-User_token = %s
+TOKEN_API_VK = %s
 
 # ID of autorized User     
 user_id_user = %s
