@@ -10,7 +10,6 @@ for event in bot.longpoll.listen():
         event_command = event.object.message['text'].lower()
         bot.bot_command(event_command, event, peer_id, random_id)
 
-
     elif event.type == VkBotEventType.MESSAGE_EVENT:
         peer_id = event.object.peer_id
         event_command = event.object.payload['type']

@@ -5,6 +5,7 @@ from vk_api.bot_longpoll import VkBotLongPoll
 from API_VK.api import api
 
 class vkBot():
+    list_message=[]
     def __init__(self):
         self.vk_session = vk_api.VkApi(token=TOKEN_BOT)
         self.longpoll = VkBotLongPoll(self.vk_session, GROUP_ID)
@@ -14,6 +15,7 @@ class vkBot():
         self.count_users = 0
         self.filter = (99, 2, 6, 20, 20)
         self.id_user = 0
+        self.message_id = 0
 
     def menu_keyboard(self):
         keyboard = VkKeyboard(one_time=False)
@@ -74,6 +76,16 @@ class vkBot():
                   f"blacklist - список пользователей попавших в черный список"
         return message
 
+    def delete_message(self):
+        message_id = self.message_id
+        if len(self.list_message) > 0:
+            self.message_id = self.list_message.pop()
+            self.vk.messages.delete(
+                message_ids=message_id,
+                group_id=GROUP_ID,
+                delete_for_all=True,
+            )
+
     def bot_command(self, event_command, event, peer_id, random_id):
         offset = self.offset
         count_users = self.count_users
@@ -81,18 +93,23 @@ class vkBot():
         id_user = self.id_user
 
         if event_command == 'start':
+            self.delete_message()
             user = api().user(event.object.message['from_id'])
             keyboard = self.menu_keyboard()
             message = f'Привет, {user["first_name"]}! Для продолжения работы используй кнопки действия!'
-            message_id = self.message(peer_id, random_id, message, keyboard)
-            print(f"Start====>  {message_id}")
+            self.message_id = self.message(peer_id, random_id, message, keyboard)
+            print(f"Start====>  {self.message_id}")
+            self.list_message.append(self.message_id)
 
         elif event_command == 'help':
+            self.delete_message()
             message = self.bot_help_message()
-            message_id = self.message(peer_id, random_id, message)
-            print(f"HELP====>   {message_id}")
+            self.message_id = self.message(peer_id, random_id, message)
+            print(f"HELP====>   {self.message_id}")
+            self.list_message.append(self.message_id)
 
         elif 'search' in event_command:
+            self.delete_message()
             if event_command == 'search':
                 offset = 0
                 command = 'search'
@@ -116,51 +133,64 @@ class vkBot():
             message = f'{users["users"][0]["first_name"]} {users["users"][0]["last_name"]}\n' \
                       f'https://vk.com/id{users["users"][0]["id_user"]}'
             attachment = users['users'][0]['photo']
-            message_id = self.message(peer_id, random_id, message, keyboard, attachment)
+            self.message_id = self.message(peer_id, random_id, message, keyboard, attachment)
             self.id_user = users["users"][0]["id_user"]
-            print(f"SEARCH={command}===> {message_id}")
+            print(f"SEARCH={command}===> {self.message_id}")
+            self.list_message.append(self.message_id)
 
         elif event_command == 'add_favorites':
+            self.list_message.append(self.message_id)
             if id_user != 0:
                 list_favorites = api().insert_favorites(id_user)
                 message = f"Пользователь добавлен в избранные!!!!! В вашем листе {list_favorites}"
-                message_id = self.message(peer_id, random_id, message)
-                print(f"ADD_FAVORITES====>{message_id}")
+                self.message_id = self.message(peer_id, random_id, message)
+                print(f"ADD_FAVORITES====>{self.message_id}")
+                self.delete_message()
 
         elif event_command == 'add_blacklist':
+            self.list_message.append(self.message_id)
             if id_user != 0:
                 list_black = api().insert_blacklist(id_user)
                 message = f"Пользователь добавлен в чёрный список!!!!! В вашем листе {list_black}"
-                message_id = self.message(peer_id, random_id, message)
-                print(f"ADD_BLACKLIST====>{message_id}")
+                self.message_id = self.message(peer_id, random_id, message)
+                print(f"ADD_BLACKLIST====>{self.message_id}")
+            self.delete_message()
 
         elif event_command == 'filter':
+            self.delete_message()
             message = f"Тип фильтра (Город, Пол, Семейное положение, Возраст с, Возраст по). В данный момент фильтр {filter}"
-            message_id = self.message(peer_id, random_id, message)
-            print(f"FILTER====>{message_id}")
+            self.message_id = self.message(peer_id, random_id, message)
+            print(f"FILTER====>{self.message_id}")
+            self.list_message.append(self.message_id)
 
         elif 'filter_setting' in event_command:
+            self.delete_message()
             string = event.object.message['text'].lower().replace("filter_setting", "")
             new_filter = api().update_filter(string)
             self.filter = new_filter
             message = f"Фильтры изменён на {new_filter}!!!!!"
-            message_id = self.message(peer_id, random_id, message)
-            print(f"FILTER_SETTING====>{message_id}")
+            self.message_id = self.message(peer_id, random_id, message)
+            print(f"FILTER_SETTING====>{self.message_id}")
+            self.list_message.append(self.message_id)
 
         elif event_command == 'favorites':
+            self.delete_message()
             message = ''
             list_favorite = api().view_favorites(peer_id)
             for item in list_favorite:
                 message += f"https://vk.com/id{item}\n"
             message = f"Ваши избранные пользователи {len(list_favorite)}:\n{message}"
-            message_id = self.message(peer_id, random_id, message)
-            print(f"FAVORITES====>{message_id}")
+            self.message_id = self.message(peer_id, random_id, message)
+            print(f"FAVORITES====>{self.message_id}")
+            self.list_message.append(self.message_id)
 
         elif event_command == 'blacklist':
+            self.delete_message()
             message = ''
             list_blacklist = api().view_blacklist(peer_id)
             for item in list_blacklist:
                 message += f"https://vk.com/id{item}\n"
             message = f"Ваши пользователи из чёрного списка {len(list_blacklist)}:\n{message}"
-            message_id = self.message(peer_id, random_id, message)
-            print(f"BLACKLIST====>{message_id}")
+            self.message_id = self.message(peer_id, random_id, message)
+            print(f"BLACKLIST====>{self.message_id}")
+            self.list_message.append(self.message_id)
