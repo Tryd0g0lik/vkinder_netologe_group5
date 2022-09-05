@@ -4,8 +4,10 @@ from config import TOKEN_BOT, GROUP_ID
 from vk_api.bot_longpoll import VkBotLongPoll
 from API_VK.api import api
 
-class vkBot():
-    list_message=[]
+
+class vkBot:
+    list_message = []
+
     def __init__(self):
         self.vk_session = vk_api.VkApi(token=TOKEN_BOT)
         self.longpoll = VkBotLongPoll(self.vk_session, GROUP_ID)
