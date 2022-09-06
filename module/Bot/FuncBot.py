@@ -1,7 +1,9 @@
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
-from API_VK.api import api
+from module.API_VK.api import api
 from vk_api.utils import get_random_id
+# from ..dbBot.dbot import FaivoriteList
 
+# @FaivoriteList
 def message_new(event_message, event, vk):
 	if event_message['text'].lower() == 'start':
 		user = api().user(event_message['from_id'])
@@ -100,7 +102,7 @@ def message_new(event_message, event, vk):
 			random_id=get_random_id(),
 			message="Вывести всех пользователей из черного списка!!!!!"
 		)
-	return message_id
+	return (message_id, user)
 
 def message_event(message_id, event, vk):
 	if message_id is not None and message_id != 0:

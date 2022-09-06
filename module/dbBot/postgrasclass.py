@@ -2,7 +2,7 @@ import sqlalchemy
 from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy import create_engine, MetaData, Table, String, Integer, Text, Column, CheckConstraint
 from sqlalchemy.ext.declarative import declarative_base
-
+import inspect
 
 class sqlTasks():
   def __init__(self, dbname,  password = "nlo7"):
@@ -117,8 +117,9 @@ class sqlTasks():
 
     )
     metadata.create_all(engine)
-    return
+    return (users, filters, status, elected_user)
 
 
-  def insesert(self):
-    ...
+
+f = sqlTasks(dbname="vkinder")
+print(f.templateTable())
