@@ -10,7 +10,7 @@ class GKUser:
 
   def __init__(self):
     """
-    Get Key-token from User
+    Get Key-token for User
     :return: Key : str
     """
     self.user_token : str

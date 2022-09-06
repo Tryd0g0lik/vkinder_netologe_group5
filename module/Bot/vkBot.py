@@ -2,7 +2,7 @@ import vk_api
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 from config import TOKEN_BOT, GROUP_ID
 from vk_api.bot_longpoll import VkBotLongPoll
-from API_VK.api import api
+from module.API_VK.api import api
 
 
 class vkBot:

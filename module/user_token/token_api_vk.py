@@ -1,6 +1,26 @@
-import vk_api
-import vk
+# from module.user_token.token_api_vk import mainAutor, renameFile
 import os
+import json
+
+
+import vk_api
+
+def checkInput():
+  while True:
+
+    resposne = ((input(': ')).strip())
+
+    if resposne in " " or resposne == "":
+      print(
+        """
+Error: returning and repeat.
+"""
+      )
+      continue
+
+    else:
+      return resposne
+
 
 def auth_handler():
     """ При двухфакторной аутентификации вызывается эта функция.
@@ -34,7 +54,54 @@ def mainAutor(login, password):
 
 def renameFile():
     os.rename("vk_config.v2.json", "vk_config.json")
+
     return
+
+def jsonGeToken():
+  with open("vk_config.json", "r") as vkv2:
+    dict_var = json.load(vkv2)
+    login = list(dict_var.keys())[0]
+    token = dict_var[login]["token"]["app6222115"]["scope_FRIEND.STORIES.MESSAGES"]["access_token"]
+    id_user = dict_var[login]["token"]["app6222115"]["scope_FRIEND.STORIES.MESSAGES"]["user_id"]
+
+  with open(".env", "a") as file_env:
+    file_env.write(
+      """
+
+# User_token for VK
+TOKEN_API_VK = %s
+
+# ID of autorized User     
+user_id_user = %s
+""" % (token, id_user)
+    )
+    return
+
+def token():
+# --------Get token and ID of usser --------
+  if not os.path.exists("vk_config.json"):
+    if not os.path.exists("vk_config.v2.json"):
+      if os.path.exists("vk_config.json"):
+        os.remove("vk_config.json")
+      elif os.path.exists("vk_config.v2.json"):
+        os.remove("vk_config.v2.json")
+
+      print("Your login and Password!")
+      # login, passw = input("Login: "), input("Passw: ")
+      login, passw = checkInput(), checkInput()
+      vk_session = mainAutor(login, passw)
+      vk_login = vk_api.VkApi(login, passw)
+      vk_login.token['access_token']
+
+    if not os.path.exists("vk_config.json"):
+      renameFile()
+
+    jsonGeToken()
+
+  else:
+    if not os.path.exists("vk_config.json"):
+      renameFile()
+    jsonGeToken()
 
 
 class apiFunction:

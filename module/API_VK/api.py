@@ -1,23 +1,20 @@
 import vk_api
-from vk_api.keyboard import VkKeyboard, VkKeyboardColor
-from vk_api.utils import get_random_id
-from config import DSN, TOKEN_API_VK, VERSION_API_VK
-from ..dbBot.dbot import User #correct
+from config import DSN, TOKEN_API_VK
+from ..dbBot.decoders import User #correct
+
 
 class api:
-    favorits = []
+    favorites = []
     blacklist = []
     def __init__(self):
         self._vk = vk_api.VkApi(token=TOKEN_API_VK)
         self.vk = self._vk.get_api()
-
         self.offset = 0
 
-    @User #correct
+    @User  # correct
     def user(self, user_id):
-        res = self.vk.users.get(user_ids=user_id, fields=["city","sex"])[0]
-        print(f"API =======> user =======> {res}")
-        self.offset = 0
+        res = self.vk.users.get(user_ids=user_id, fields=["city"] )[0]
+        self.user_id=user_id
         return res
 
     def open_user(self, offset, filters, command='search'):
@@ -28,8 +25,7 @@ class api:
         res = self.vk.users.search(
             city=filters[0], sex=filters[1],
             status=filters[2], age_from=filters[3],
-            age_to=filters[4], has_photo=True, count=count, offset=self.offset
-        )
+            age_to=filters[4], has_photo=True, count=count, offset=self.offset)
 
         if self.command == 'search':
             if res['items'][0]['is_closed'] is not False:
@@ -45,7 +41,7 @@ class api:
                 if res['items'][0]['is_closed'] is not False:
                     offset += 1
             else:
-                offset -= 1
+                offset -=1
         if res['items'][0]['is_closed'] is not True:
             res['offset'] = offset
             return res
@@ -110,11 +106,11 @@ class api:
         return self.filter
 
     def view_favorites(self, user_id):
-        # из БД выбрать
+        #из БД выбрать
         result = self.favorites
         return result
 
     def view_blacklist(self, user_id):
-        # Из БД выбрать
-        result = self.blacklist
+        #Из БД выбрать
+        result = self. blacklist
         return result

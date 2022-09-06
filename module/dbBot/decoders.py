@@ -6,6 +6,11 @@ This's functions for jobs between vk-bot and db
 
 
 def User(func):
+	"""
+	"\module\API_VK\api.py : def user()"
+	:param func: Id user
+	:return: list of data went authorized users
+	"""
 	def new_function(self, user_id):
 		res = func(self, user_id)
 		print("111", res)
@@ -19,6 +24,12 @@ def User(func):
 		}
 		return params
 	return  new_function
+
+def listFivorites(func : object):
+	def new_function(*args ):
+		response_fivorites = func(*args)
+
+
 
 
 
