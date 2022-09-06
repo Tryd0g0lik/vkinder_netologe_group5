@@ -1,4 +1,14 @@
+<<<<<<< HEAD
 from module.dbBot.sql_requests import Botdb
+=======
+from sqlalchemy.orm import declarative_base
+import inspect
+
+from sqlalchemy_utils.types.pg_composite import psycopg2
+
+from config import LOGIN_DB, PASSWORD_DB
+from module.sql_requests import Botdb
+>>>>>>> b6478ea5a468e422b920c7816b1a73f6a06dce2c
 
 """
 This's functions for jobs between vk-bot and db
