@@ -1,5 +1,4 @@
 # from ..Bot.FuncBot import message_new
-from ...main1 import function_send
 from sqlalchemy import create_engine
 from postgrasclass import sqlTasks
 import psycopg2
