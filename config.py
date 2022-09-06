@@ -11,3 +11,4 @@ VERSION_API_VK = os.getenv("VERSION_API_VK")
 
 LOGIN_DB = os.getenv("LOGIN_DB")
 PASSWORD_DB = os.getenv("PASSWORD_DB")
+CLIENT_SECRET = os.getenv("CLIENT_SECRET")

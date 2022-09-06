@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS filters (
 
 CREATE TABLE IF NOT EXISTS status (
 	id SERIAL PRIMARY KEY,
-	type_status varchar(11) NOT NULL DEFAULT 'def_list'
+	type_status varchar(11) NOT NULL DEFAULT 'default'
 );
 
 
@@ -27,3 +27,11 @@ CREATE TABLE IF NOT EXISTS elected_users (
 	id_elected_user INTEGER check(id_elected_user >= 1 and id_elected_user <= 9999999999),
 	id_status INTEGER REFERENCES status(id)
 )
+
+
+insert  INTO users VALUES (02,'TT','Ttttt',18,99,'Null')
+
+SELECT el.id_user, el.id_elected_user, el.id_status
+          FROM elected_users el
+          JOIN status st on el.id_status = el.id_status
+          JOIN users u on u.id_vk = el.id_user
