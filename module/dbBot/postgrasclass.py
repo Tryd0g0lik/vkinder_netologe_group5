@@ -109,7 +109,7 @@ class sqlTasks():
     )
 
     elected_user = Table(
-      'elected_user', metadata,
+      'elected_users', metadata,
       Column('id_user', sqlalchemy.ForeignKey("users.id_vk") ),
       Column('id_elected_user', Integer()),
       CheckConstraint('id_elected_user >= 1' and 'id_elected_user <= 9999999999', name='id_elected_user'),

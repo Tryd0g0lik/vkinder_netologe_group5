@@ -1,8 +1,17 @@
 from sqlalchemy.orm import declarative_base
 import inspect
+
+from sqlalchemy_utils.types.pg_composite import psycopg2
+
+from config import LOGIN_DB, PASSWORD_DB
+from module.sql_requests import Botdb
+
 """
 This's functions for jobs between vk-bot and db
 """
+
+
+
 
 
 def User(func):
@@ -22,12 +31,22 @@ def User(func):
 			"id_sity" : res["city"]['id'],
 			"tokens" : "Null"
 		}
+
+		users_table = Botdb()
+		users_table.insertUser(params)
+
+
 		return params
 	return  new_function
 
-def listFivorites(func : object):
+
+
+
+def Blacklist(func : object):
 	def new_function(*args ):
-		response_fivorites = func(*args)
+		responseList = func(*args)
+	return
+
 
 
 

@@ -13,7 +13,7 @@ class api:
 
     @User  # correct
     def user(self, user_id):
-        res = self.vk.users.get(user_ids=user_id, fields=["city"] )[0]
+        res = self.vk.users.get(user_ids=user_id, fields=["city"] )[0] # correct
         self.user_id=user_id
         return res
 
