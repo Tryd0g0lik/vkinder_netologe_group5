@@ -61,7 +61,7 @@ class Botdb():
       """
       Will it have in db or not  
       """
-      print("__exists")
+
       self.cur.execute("""
   SELECT * FROM %s WHERE %s = %s; 
   """ % (table_name, column_name, value_column_name))
@@ -71,14 +71,14 @@ class Botdb():
       """
       It will look nique or not unique
       """
-      print("__exists 2")
+
       self.cur.execute(
         """
         SELECT * FROM %s WHERE %s = %s and %s = %s ; 
         """ % (table_name, column_name, value_column_name, column_name_2, value_column_name_2)
         )
       response = self.cur.fetchall()
-    print(f"response __exists: {response}")
+
 
 
     return response
@@ -110,14 +110,13 @@ class Botdb():
       value_column_name_2=value_column_name_2
       )
 
-    print ("hile cycle:")
+
     if event_command  == 'add_favorites' and user_id != 0:
-      # for id_elected_user in Iterator(list_message):
-      print(f"rsponse_exists: {response_exists}")
+
 
       if response_exists != []:
-        # if response_exists[0][1] !=
-        print("favorites has this Id_use")
+
+        print("the list 'favorites' has this Id_use")
         return "None"
 
       elif response_exists == []:
@@ -126,11 +125,8 @@ class Botdb():
 
 
     elif event_command == 'add_blacklist' and user_id != 0:
-      # print("__listIdUser 2")
-
-      print(f"rsponse_exists: {response_exists}")
       if response_exists != []:
-        print(f"blacklist has this Id_use")
+        print(f"the list 'blacklist' has this Id_use")
         return "None"
       elif response_exists == []:
         return (user_id, 'favorites', id_elected_user)
@@ -154,10 +150,7 @@ class Botdb():
 
     return response_select
 
-  function '__list Id User' was create, corrected '__exists' and created a 'insertElected' wich checks the data, \
-                                                                                                           it or not it
-  's in db,  ' \
-                                                                                                'last data to recording in a  db
+
   def insertElected(self, user_id, event_command, id_elected_user):
     """
     We take authorized user id and for this account written does been record to a black and favorite lists
@@ -172,16 +165,17 @@ class Botdb():
                    event_command=event_command,
                    id_elected_user="id_elected_user",
                    value_column_name_2=id_elected_user)
+
     self.id_user = user_id
     self.id_elected_user = id_elected_user
-    print(f"response: {response}")
+
     if event_command == "add_favorites":
       self.id_status = 0
 
     elif event_command == "add_blacklist":
       self.id_status = 1
 
-    print(f"insertElected response: {response}")
+
     if response != "None":
       self.cur.execute("""\
   INSERT INTO elected_users VALUES (%s, %s,%s);"""
@@ -215,15 +209,6 @@ class Botdb():
       print("'id_vk' is in db")
     Botdb.__close(self)
     return params["id_vk"]
-
-t = Botdb()
-# t.insertlected()
-# print(t.__exists("users", "id_vk", 163911024))
-for i in Iterator(["https://vk.com/id203898648",
-"https://vk.com/id288937409",
-"https://vk.com/id240352264",
-"https://vk.com/id514211543"]):
-  print(i)
 
 class sqlTasks():
   def __init__(self, dbname,  password = "nlo7"):
