@@ -36,7 +36,5 @@ SELECT el.id_user, el.id_elected_user, el.id_status
           JOIN status st on el.id_status = el.id_status
           JOIN users u on u.id_vk = el.id_user
 
-SELECT column_name(s)
-FROM table_name
-WHERE EXISTS
-(SELECT column_name FROM table_name WHERE condition);
+SELECT id_user, id_elected_user FROM elected_users where id_elected_user = 33533 and id_user = 337771024
+

@@ -196,3 +196,6 @@ class vkBot:
             self.message_id = self.message(peer_id, random_id, message)
             print(f"BLACKLIST====>{self.message_id}")
             self.list_message.append(self.message_id)
+        if event_command == 'start':# correct
+            return (user, event_command, id_user)# correct
+        return (event_command, id_user) # correct

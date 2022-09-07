@@ -28,7 +28,7 @@ def User(func):
 		}
 
 		users_table = Botdb()
-		users_table.insertUser(params)
+		user_id = users_table.insertUser(params)
 
 
 		return params

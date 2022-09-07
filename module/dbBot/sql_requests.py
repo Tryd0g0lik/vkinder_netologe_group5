@@ -7,6 +7,26 @@ from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy import create_engine, MetaData, Table, String, Integer, Text, Column, CheckConstraint
 from sqlalchemy.ext.declarative import declarative_base
 import inspect
+class Iterator:
+  def __init__(self, atr : list):
+    """
+    :param atr: Received list at  the Bot will be divide on an id
+    """
+    self.atr = atr
+
+  def __iter__(self):
+
+    return self
+
+  def __next__(self):
+
+    if self.atr == []:
+      raise StopIteration
+    for link in self.atr:
+      respons = str(link).split("id").pop()
+      self.atr.pop(0)
+      return respons
+
 
 class Botdb():
   def __init__(self, id_user = None, id_elected_user = None,
@@ -14,6 +34,8 @@ class Botdb():
     self.id_elected_user = id_elected_user
     self.id_user = id_user
     self.id_status = id_status
+
+  def __start(self):
     self.conn = psycopg2.connect(database="vkinder", user=LOGIN_DB, password=PASSWORD_DB)
     self.cur = self.conn.cursor()
 
@@ -24,46 +46,106 @@ class Botdb():
     self.conn.close()
     self.cur.close()
 
-  def __exists(self, table_name : str, column_name : str, redord,
-               elected_id = None, status_id = None):
+  def __exists(self, table_name : str, column_name : str, value_column_name,
+               column_name_2 = None, value_column_name_2 = None):
     """
+    This's method for checks 'value_column_name' on the presence 'value_column_name'  in db and  the condition
     :param table_name: Table name when will search
-    :param column_name: Column of the table when wil a search
-    :param redord: The row for search in the table
-    :param elected_id: This attribute for searching the elected id user which has been assigned status
-    :param status_id:  For an authorized user  is elected id user is only unique
+    :param column_name: Column of the table when will a search
+    :param value_column_name: The row for search in the table
+    :param column_name_2: This attribute for searching the elected id user which has been assigned status
+    :param value_column_name_2:  For an authorized user  is elected id user is only unique
     :return: rows as a result simply searching. Session not closed
     """
-    if elected_id is None:
+    if column_name_2 is None:
       """
       Will it have in db or not  
       """
-
+      print("__exists")
       self.cur.execute("""
   SELECT * FROM %s WHERE %s = %s; 
-  """ % (table_name, column_name, redord))
-      response = self.cur.fetchone()
+  """ % (table_name, column_name, value_column_name))
+      response = self.cur.fetchall()
 
     else:
       """
       It will look nique or not unique
       """
-
+      print("__exists 2")
       self.cur.execute(
         """
         SELECT * FROM %s WHERE %s = %s and %s = %s ; 
-        """ % (table_name, column_name, redord, elected_id, status_id)
+        """ % (table_name, column_name, value_column_name, column_name_2, value_column_name_2)
         )
       response = self.cur.fetchall()
-
+    print(f"response __exists: {response}")
 
 
     return response
+
+
+  def __listIdUser(self, table_name,
+                   column_name,
+                   user_id,
+                   event_command,
+                   id_elected_user,
+                   value_column_name_2):
+    """
+    The Filter  - spend data with the black or white the status
+    :param table_name: The name table in the db.
+    :param column_name: The chosen column of the db
+    :param user_id: ID user passed path authorization.
+    :param event_command:
+    :param id_elected_user: id electes user.
+    :param value_column_name_2:
+    :return:
+    """
+
+    response_exists = Botdb.__exists(
+      self,
+      table_name=table_name,
+      column_name=column_name,
+      value_column_name=user_id,
+      column_name_2=id_elected_user,
+      value_column_name_2=value_column_name_2
+      )
+
+    print ("hile cycle:")
+    if event_command  == 'add_favorites' and user_id != 0:
+      # for id_elected_user in Iterator(list_message):
+      print(f"rsponse_exists: {response_exists}")
+
+      if response_exists != []:
+        # if response_exists[0][1] !=
+        print("favorites has this Id_use")
+        return "None"
+
+      elif response_exists == []:
+
+        return (user_id, 'favorites', id_elected_user)
+
+
+    elif event_command == 'add_blacklist' and user_id != 0:
+      # print("__listIdUser 2")
+
+      print(f"rsponse_exists: {response_exists}")
+      if response_exists != []:
+        print(f"blacklist has this Id_use")
+        return "None"
+      elif response_exists == []:
+        return (user_id, 'favorites', id_elected_user)
+
+
+    else:
+      print("Don't see the command - it need in a black or white list be adds!")
+      exit()
+
 
   def selectData(self):
     """"
     Get a data of the table
     """
+    Botdb.__start(self)
     self.cur.execute("""SELECT * FROM elected_users;""")
     response_select = self.cur.fetchall()
 
@@ -72,30 +154,48 @@ class Botdb():
 
     return response_select
 
-  def insertelected(self):
+  def insertElected(self, user_id, event_command, id_elected_user):
     """
     We take authorized user id and for this account written does been record to a black and favorite lists
     Authorized id not unique.
 
     :return: None
     """
-    Botdb.__exists()
+    Botdb.__start(self)
+    response = Botdb.__listIdUser(self, table_name="elected_users",
+                   column_name="id_user",
+                   user_id=user_id,
+                   event_command=event_command,
+                   id_elected_user="id_elected_user",
+                   value_column_name_2=id_elected_user)
+    self.id_user = user_id
+    self.id_elected_user = id_elected_user
+    print(f"response: {response}")
+    if event_command == "add_favorites":
+      self.id_status = 0
 
-    self.cur.execute("""\
-INSERT INTO elected_users VALUES (%s, %s,%s);"""
-% (self.id_user, self.id_elected_user, self.id_status))
-    self.conn.commit()
-    Botdb.__close(self)
+    elif event_command == "add_blacklist":
+      self.id_status = 1
+
+    print(f"insertElected response: {response}")
+    if response != "None":
+      self.cur.execute("""\
+  INSERT INTO elected_users VALUES (%s, %s,%s);"""
+  % (self.id_user, self.id_elected_user, self.id_status))
+      self.conn.commit()
+      Botdb.__close(self)
     return
 
   def insertUser(self, params : list):
     """
     Data about the authorized user
-    :param params: Params which gets from the bot when went executing 'start' command
-    :return: If id_user not exists in the table 'Users' then going recording a new data in the db and will see row ''id_vk' is in db'
-    If td has 'id_vk' when see row 'A new id_vk №-id_vk (id user wich aitorisation in bot) has been inserted in 'user'
+     If id_user not exists in the table 'Users' then going recording a new data in the db and will see row 'id_vk' is in db'
+    If td has 'id_vk' when see row A new id_vk №-id_vk (id user which aitorisation in bot) has been inserted in 'user'
     table.'
+    :param params: Params which gets from the bot when went executing 'start' command
+    :return: The user id is active
     """
+    Botdb.__start(self)
     response = Botdb.__exists(self, "users", 'id_vk', params["id_vk"])
 
     if response == None:
@@ -110,11 +210,16 @@ INSERT INTO elected_users VALUES (%s, %s,%s);"""
     else:
       print("'id_vk' is in db")
     Botdb.__close(self)
-    return
+    return params["id_vk"]
 
 t = Botdb()
 # t.insertlected()
 # print(t.__exists("users", "id_vk", 163911024))
+for i in Iterator(["https://vk.com/id203898648",
+"https://vk.com/id288937409",
+"https://vk.com/id240352264",
+"https://vk.com/id514211543"]):
+  print(i)
 
 class sqlTasks():
   def __init__(self, dbname,  password = "nlo7"):
