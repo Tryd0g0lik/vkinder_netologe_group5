@@ -18,11 +18,52 @@ class Botdb():
     self.cur = self.conn.cursor()
 
   def __close(self):
+    """
+    :return: Transaction is closing
+    """
     self.conn.close()
     self.cur.close()
 
-  def selectData(self):
+  def __exists(self, table_name : str, column_name : str, redord,
+               elected_id = None, status_id = None):
+    """
+    :param table_name: Table name when will search
+    :param column_name: Column of the table when wil a search
+    :param redord: The row for search in the table
+    :param elected_id: This attribute for searching the elected id user which has been assigned status
+    :param status_id:  For an authorized user  is elected id user is only unique
+    :return: rows as a result simply searching. Session not closed
+    """
+    if elected_id is None:
+      """
+      Will it have in db or not  
+      """
 
+      self.cur.execute("""
+  SELECT * FROM %s WHERE %s = %s; 
+  """ % (table_name, column_name, redord))
+      response = self.cur.fetchone()
+
+    else:
+      """
+      It will look nique or not unique
+      """
+
+      self.cur.execute(
+        """
+        SELECT * FROM %s WHERE %s = %s and %s = %s ; 
+        """ % (table_name, column_name, redord, elected_id, status_id)
+        )
+      response = self.cur.fetchall()
+
+
+
+    return response
+
+  def selectData(self):
+    """"
+    Get a data of the table
+    """
     self.cur.execute("""SELECT * FROM elected_users;""")
     response_select = self.cur.fetchall()
 
@@ -31,7 +72,14 @@ class Botdb():
 
     return response_select
 
-  def insertlected(self):
+  def insertelected(self):
+    """
+    We take authorized user id and for this account written does been record to a black and favorite lists
+    Authorized id not unique.
+
+    :return: None
+    """
+    Botdb.__exists()
 
     self.cur.execute("""\
 INSERT INTO elected_users VALUES (%s, %s,%s);"""
@@ -41,21 +89,32 @@ INSERT INTO elected_users VALUES (%s, %s,%s);"""
     return
 
   def insertUser(self, params : list):
+    """
+    Data about the authorized user
+    :param params: Params which gets from the bot when went executing 'start' command
+    :return: If id_user not exists in the table 'Users' then going recording a new data in the db and will see row ''id_vk' is in db'
+    If td has 'id_vk' when see row 'A new id_vk №-id_vk (id user wich aitorisation in bot) has been inserted in 'user'
+    table.'
+    """
+    response = Botdb.__exists(self, "users", 'id_vk', params["id_vk"])
 
-    self.cur.execute(
+    if response == None:
+      self.cur.execute(
         """INSERT INTO users VALUES (%s,'%s','%s',%s,%s,'%s');""" % (
           params["id_vk"], params["first_name"],
           params["last_name"], params["age"],
           params["id_sity"], params["tokens"])
-        )
-
-    self.conn.commit()
+      )
+      print("A new id_vk %s has been inserted in 'user' table." % (params["id_vk"],))
+      self.conn.commit()
+    else:
+      print("'id_vk' is in db")
     Botdb.__close(self)
     return
 
 t = Botdb()
 # t.insertlected()
-print(t.selectData())
+# print(t.__exists("users", "id_vk", 163911024))
 
 class sqlTasks():
   def __init__(self, dbname,  password = "nlo7"):
@@ -163,10 +222,10 @@ class sqlTasks():
 
     elected_user = Table(
       'elected_users', metadata,
-      Column('id_user', sqlalchemy.ForeignKey("users.id_vk") ),
-      Column('id_elected_user', Integer()),
+      Column('id_user', sqlalchemy.ForeignKey("users.id_vk"), nullable = False),
+      Column('id_elected_user', Integer(), nullable = False),
       CheckConstraint('id_elected_user >= 1' and 'id_elected_user <= 9999999999', name='id_elected_user'),
-      Column('id_status', sqlalchemy.ForeignKey("status.id"))
+      Column('id_status', sqlalchemy.ForeignKey("status.id"), nullable = False)
 
     )
     metadata.create_all(engine)
