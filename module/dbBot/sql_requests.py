@@ -154,6 +154,10 @@ class Botdb():
 
     return response_select
 
+  function '__list Id User' was create, corrected '__exists' and created a 'insertElected' wich checks the data, \
+                                                                                                           it or not it
+  's in db,  ' \
+                                                                                                'last data to recording in a  db
   def insertElected(self, user_id, event_command, id_elected_user):
     """
     We take authorized user id and for this account written does been record to a black and favorite lists
