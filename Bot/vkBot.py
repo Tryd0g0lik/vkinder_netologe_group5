@@ -1,6 +1,6 @@
 import vk_api
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
-from config import TOKEN_BOT, GROUP_ID
+from config import TOKEN_BOT, GROUP_ID, ID_APP
 from vk_api.bot_longpoll import VkBotLongPoll
 from API_VK.api import api
 
@@ -98,9 +98,20 @@ class vkBot:
             self.delete_message()
             user = api().user(event.object.message['from_id'])
             keyboard = self.menu_keyboard()
-            message = f'Привет, {user["first_name"]}! Для продолжения работы используй кнопки действия!'
+            message = f'Привет, {user["first_name"]}! Для продолжения работы используй кнопки действия!\n' \
+                      f'Как получите токен по ссылке ниже!\n' \
+                      f'https://oauth.vk.com/authorize?client_id={ID_APP}&scope=65536&response_type=token\n' \
+                      f'Введите команду: token ваш токен\n'
             self.message_id = self.message(peer_id, random_id, message, keyboard)
             print(f"Start====>  {self.message_id}")
+            self.list_message.append(self.message_id)
+
+        elif 'token' in event_command:
+            self.delete_message()
+            string = event.object.message['text'].lower().replace("token", "")
+            message = "TOKEN ADD"
+            self.message_id = self.message(peer_id, random_id, message)
+            print(f"TOKEN====>   {self.message_id}")
             self.list_message.append(self.message_id)
 
         elif event_command == 'help':

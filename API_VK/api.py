@@ -1,11 +1,12 @@
 import vk_api
-from config import DSN, TOKEN_API_VK
+from config import TOKEN_API_VK
 
 
 class api:
     favorites = []
     blacklist = []
     def __init__(self):
+        #self.TOKEN_API_VK = token
         self._vk = vk_api.VkApi(token=TOKEN_API_VK)
         self.vk = self._vk.get_api()
         self.offset = 0

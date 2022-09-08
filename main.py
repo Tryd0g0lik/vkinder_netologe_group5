@@ -1,8 +1,10 @@
 from vk_api.utils import get_random_id
 from vk_api.bot_longpoll import VkBotEventType
 from Bot.vkBot import vkBot
+from BotDB.BotDB import BotDB
 
 if __name__ == '__main__':
+    BotDB()
     bot = vkBot()
     for event in bot.longpoll.listen():
         random_id = get_random_id()
