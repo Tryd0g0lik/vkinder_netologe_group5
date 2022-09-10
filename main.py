@@ -3,9 +3,10 @@ from vk_api.bot_longpoll import VkBotEventType
 from Bot.vkBot import vkBot
 from BotDB.BotDB import BotDB
 
+
 if __name__ == '__main__':
-    BotDB()
-    bot = vkBot()
+    db = BotDB()
+    bot = vkBot(db)
     for event in bot.longpoll.listen():
         random_id = get_random_id()
         if event.type == VkBotEventType.MESSAGE_NEW:

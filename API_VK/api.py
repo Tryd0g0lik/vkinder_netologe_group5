@@ -1,17 +1,21 @@
 import vk_api
+
 from config import TOKEN_API_VK
+from BotDB.BotDB import BotDB
+
 
 
 class api:
     favorites = []
     blacklist = []
-    def __init__(self):
-        #self.TOKEN_API_VK = token
+    def __init__(self, db):
+        self.db = db
         self._vk = vk_api.VkApi(token=TOKEN_API_VK)
         self.vk = self._vk.get_api()
         self.offset = 0
 
     def user(self, user_id):
+        self.db.insert_user(user_id)
         res = self.vk.users.get(user_ids=user_id)[0]
         self.user_id=user_id
         return res

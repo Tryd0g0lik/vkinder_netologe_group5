@@ -3,3 +3,4 @@ pytest-cov
 sqlalchemy
 python-dotenv
 vk_api
+psycopg2
