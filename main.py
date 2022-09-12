@@ -1,6 +1,7 @@
 from vk_api.utils import get_random_id
 from vk_api.bot_longpoll import VkBotEventType
 from module.Bot.vkBot import vkBot
+import socket
 from module.dbBot.sql_requests import sqlTasks, Botdb
 from module.user_token.token_api_vk import token, checkInput
 
@@ -31,8 +32,8 @@ class Topmenu:
         if response in "t":
             token()
         elif response in "s":
-            bot = vkBot()
-            db = Botdb()
+            db_ = Botdb()
+            bot = vkBot(db_)
             for event in bot.longpoll.listen():
                 random_id = get_random_id()
                 if event.type == VkBotEventType.MESSAGE_NEW:
@@ -52,7 +53,7 @@ class Topmenu:
                     params = bot.bot_command(event_command, event, peer_id, random_id)  #correct
 
                     if params[0] == "add_favorites" or params[0] == "add_blacklist":#correct
-                        db.insertElected(user_id=user_id, event_command=params[0], id_elected_user=params[1]) #correct
+                        db_.insertElected(user_id=user_id, event_command=params[0], id_elected_user=params[1]) #correct
 
 
         elif response in "d":
