@@ -4,6 +4,7 @@ from sqlalchemy.orm import declarative_base, relationship
 Base = declarative_base()
 
 def create_tables(engine):
+    #Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
 
 class Users(Base):
@@ -24,7 +25,8 @@ class Lists(Base):
 
 class ElectedUsers(Base):
     __tablename__ = "elected_user"
-    id_elected_user = sq.Column(sq.Integer, primary_key=True)
+    id = sq.Column(sq.Integer, primary_key=True)
+    id_elected_user = sq.Column(sq.Integer)
     id_user = sq.Column(sq.Integer, sq.ForeignKey("user.id"), nullable=False)
     id_list = sq.Column(sq.Integer, sq.ForeignKey("list.id"), nullable=False)
 
@@ -36,7 +38,16 @@ class SearchValues(Base):
     id = sq.Column(sq.Integer, primary_key=True)
     id_user = sq.Column(sq.Integer, sq.ForeignKey("user.id"), nullable=False)
     id_filter = sq.Column(sq.Integer, sq.ForeignKey("filter.id"), nullable=False)
-    values = sq.Column(sq.Integer)
+    value = sq.Column(sq.String(length=5), unique=False)
 
     users = relationship(Users, backref="search_values")
     filters = relationship(Filters, backref="search_values")
+
+class LastMessages(Base):
+    __tablename__ = "last_message"
+    id = sq.Column(sq.Integer, primary_key=True)
+    id_user = sq.Column(sq.Integer, sq.ForeignKey("user.id"), nullable=False)
+    id_message = sq.Column(sq.Integer)
+    offset = sq.Column(sq.Integer)
+
+    users = relationship(Users, backref="last_messages")
