@@ -32,8 +32,8 @@ class Topmenu:
         if response in "t":
             token()
         elif response in "s":
+            bot = vkBot()
             db_ = Botdb()
-            bot = vkBot(db_)
             for event in bot.longpoll.listen():
                 random_id = get_random_id()
                 if event.type == VkBotEventType.MESSAGE_NEW:
