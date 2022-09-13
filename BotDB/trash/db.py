@@ -29,7 +29,7 @@ print(session.query(Publisher).filter(Publisher.id == publisher_id).first())
 # добавьте запрос выборки магазинов, где продаются книги целевого издателя
 shop_publisher = session.query(Shop, Shop.id, Shop.name)\
     .join(Stock, Shop.id == Stock.id_shop)\
-    .join(Book,Stock.id_book == Book.id)\
+    .join(Book, Stock.id_book == Book.id)\
     .filter(Book.id_publisher == publisher_id, ).all()
 if len(shop_publisher) != 0:
     print(f'Магазины в которых продаются книги издателя с ID={publisher_id}')

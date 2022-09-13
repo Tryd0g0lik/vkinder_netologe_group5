@@ -10,12 +10,16 @@ class api:
         self.vk = self._vk.get_api()
         self.offset = 0
 
-    # Поиск переписывающегося пользователя с ботом и добавление в БД с определёнными критериями поиска
+    # Поиск переписывающегося пользователя с ботом и добавление в
+    # БД с определёнными критериями поиска
+
     def user(self, user_id):
-        res = self.vk.users.get(user_ids=user_id, fields='country,city,sex,status,bdate')[0]
+        res = self.vk.users.get(user_ids=user_id,
+                                fields='country,city,sex,status,bdate')[0]
         filter = self.db.insert_user(res)
         res['filter'] = filter
         return res
+
     # Листание и поиск пользователей по фильтру
     def open_user(self, user_id, offset, filters, command='search'):
         count = 1
@@ -26,7 +30,8 @@ class api:
             status=filters[3], age_from=filters[4],
             age_to=filters[5], has_photo=True, count=count, offset=self.offset)
         user_in_list = self.db.user_in_list(user_id, res['items'][0]['id'])
-        if user_in_list == 'blacklist' or res['items'][0]['is_closed'] is not False:
+        if user_in_list == 'blacklist' or \
+                res['items'][0]['is_closed'] is not False:
             if self.command == 'search':
                 offset += 1
             elif self.command == 'search_back':
@@ -51,9 +56,11 @@ class api:
                 res['star'] = False
             res['offset'] = offset
             return res
+
     # Фильтр для поиска
     def search_filter(self, user_id):
         return self.db.search_filter(user_id)
+
     # Поиск людей и 3 фотографий
     def search_users(self, user_id, offset, filters, command):
         self.command = command
@@ -78,15 +85,15 @@ class api:
                         del arr_photo[item]
                         arr_photo[photo['id']] = photo['likes']['count']
                         break
-        l = []
+        list_photo = []
         for photo in arr_photo.keys():
-            l.append(f"photo{user['items'][0]['id']}_{photo}")
+            list_photo.append(f"photo{user['items'][0]['id']}_{photo}")
 
         arr_user1 = {}
         arr_user1['id_user'] = user['items'][0]['id']
         arr_user1['first_name'] = user['items'][0]['first_name']
         arr_user1['last_name'] = user['items'][0]['last_name']
-        arr_user1['photo'] = l
+        arr_user1['photo'] = list_photo
         list_users.append(arr_user1)
 
         arr_user['offset'] = user['offset']
@@ -94,23 +101,30 @@ class api:
         arr_user['count'] = user['count']
         arr_user['users'] = list_users
         return arr_user
+
     # Добавить в лист избранных
     def insert_favorites(self, id_elected_user, user_id):
         return self.db.add_elected_user(user_id, id_elected_user, 'favorites')
+
     # Добавить в черный список
     def insert_blacklist(self, id_elected_user, user_id):
         return self.db.add_elected_user(user_id, id_elected_user, 'blacklist')
+
     # Обновить фильтр через строку
     def update_filter(self, user_id, new_filter):
         self.filter = list(map(int, new_filter.split(',')))
         self.db.update_search_filter(user_id, self.filter)
         return self.filter
+
     # Просмотр листа с избранными пользователями
+
     def view_favorites(self, user_id):
         return self.db.list_elected_user(user_id, 'favorites')
+
     # Просмотр листа с пользователями из чёрного списка
     def view_blacklist(self, user_id):
         return self.db.list_elected_user(user_id, 'blacklist')
+
     # Работа с сообщениями и последним листанием
     def worker_message(self, user_id, message_id, offset, action):
         return self.db.worker_message(user_id, message_id, offset, action)
