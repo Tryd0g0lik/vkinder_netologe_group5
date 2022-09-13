@@ -9,6 +9,7 @@ from config import DSN
 from BotDB.model import create_tables, Users, ElectedUsers, Filters, Lists, SearchValues, LastMessages
 import os.path
 
+
 class BotDB:
     def __init__(self):
         engine = sqlalchemy.create_engine(DSN)
@@ -29,6 +30,7 @@ class BotDB:
                 session.add(model(id=item.get('pk'), **item.get('fields')))
             session.commit()
         session.close()
+
     # Добавление нового пользователя, который начал общаться с ботом + создание фильтра под его параметры
     def insert_user(self, user_data):
         session = self.Session()
@@ -59,34 +61,31 @@ class BotDB:
         return self.search_filter(user_data['id'])
     # Логика сохранения последнего сообщения и сдвига листания фоток
     def worker_message(self, user_id, message_id, offset, action):
-        # id_mess = False
         session = self.Session()
         if action == 'insert':
             session.add(LastMessages(id_user=user_id, id_message=message_id, offset=offset))
-            # id_mess = message_id
-            print(f"ADD MESS===>{message_id}")
-            message_id = False
             session.commit()
+            session.close()
+            return message_id
         elif action == 'drop':
-            print(f"DROP MESS ===> {message_id}")
-            ids = session.query(LastMessages).filter(LastMessages.id_user == user_id)\
-                .filter(LastMessages.id_message == message_id).first()
-            # ids = session.query(LastMessages)\
-            #     .filter(LastMessages.id_user == user_id)\
-            #     .order_by(LastMessages.id.desc()).first()
+            id_mess = session.query(LastMessages) \
+                .filter(LastMessages.id_user == user_id) \
+                .order_by(LastMessages.id.desc()).first()
             session.commit()
-            if ids:
-                # id_mess = ids.id_message
-                session.delete(ids)
+            if id_mess:
+                i = id_mess.id_message
+                session.delete(id_mess)
                 session.commit()
-        session.close()
-        return message_id
+            else:
+                i = 0
+            session.close()
+            return i
     # Логика сохранения найденного пользователя в листы
     def add_elected_user(self, user_id, elected_user, name_list='favorites'):
         session = self.Session()
 
-        user_in_list_count = session.query(ElectedUsers)\
-            .filter(ElectedUsers.id_user == user_id)\
+        user_in_list_count = session.query(ElectedUsers) \
+            .filter(ElectedUsers.id_user == user_id) \
             .filter(ElectedUsers.id_elected_user == elected_user).count()
 
         if user_in_list_count == 0:
@@ -129,9 +128,9 @@ class BotDB:
     def list_elected_user(self, user_id, name_list):
         list_query = []
         session = self.Session()
-        user_list = session.query(ElectedUsers.id_elected_user)\
-            .join(Lists, ElectedUsers.id_list == Lists.id)\
-            .filter(ElectedUsers.id_user == user_id)\
+        user_list = session.query(ElectedUsers.id_elected_user) \
+            .join(Lists, ElectedUsers.id_list == Lists.id) \
+            .filter(ElectedUsers.id_user == user_id) \
             .filter(Lists.name == name_list).all()
         session.commit()
         session.close()
@@ -156,8 +155,8 @@ class BotDB:
     # Определение последнего сообщения от бота к пользователю для последующего его удаления
     def offset(self, user_id):
         session = self.Session()
-        res = session.query(LastMessages)\
-            .filter(LastMessages.id_user == user_id)\
+        res = session.query(LastMessages) \
+            .filter(LastMessages.id_user == user_id) \
             .order_by(LastMessages.id.desc()).first()
         session.commit()
         session.close()

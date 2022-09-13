@@ -1,14 +1,11 @@
 import vk_api
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 from config import TOKEN_BOT, GROUP_ID
-    #, GROUP_ID, ID_APP
 from vk_api.bot_longpoll import VkBotLongPoll
 from API_VK.api import api
 
 
 class vkBot:
-    list_message = []
-
     def __init__(self, db):
         self.apiVK = api(db)
         self.vk_session = vk_api.VkApi(token=TOKEN_BOT)
@@ -21,7 +18,6 @@ class vkBot:
         #self.filter = (1, 99, 2, 6, 20, 20)
         self.filter = self.apiVK.search_filter(self.id_user)
         self.message_id = 0
-
     # Метод создания основного меню
     def menu_keyboard(self):
         keyboard = VkKeyboard(one_time=False)
@@ -83,16 +79,14 @@ class vkBot:
         return message
     # Метод удаления предыдущего сообщения от бота, чтоб не засирать чат
     def worker_message(self, user_id, action):
-        message_id = self.message_id
         offset = self.offset
-        id_mess = self.apiVK.worker_message(user_id, message_id, offset, action)
-        if id_mess:
-            print(f"MESSAGE ====> {id_mess}========> action====>{action}========> message====>>{message_id}")
+        id_m = self.apiVK.worker_message(user_id, self.message_id, offset, action)
+        if action == 'drop' and id_m != 0:
             self.vk.messages.delete(
-                    message_ids=id_mess,
-                    group_id=GROUP_ID,
-                    delete_for_all=True,
-                )
+                        message_ids=id_m,
+                        group_id=GROUP_ID,
+                        delete_for_all=True,
+                    )
     # Метод основной логики управления что с команд, что с кнопок
     def bot_command(self, event_command, event, peer_id, random_id):
         offset = self.offset
@@ -162,8 +156,7 @@ class vkBot:
 
         elif event_command == 'add_favorites':
             #self.list_message.append(self.message_id)
-            print(f"add fav===>{self.message_id}")
-            self.worker_message(peer_id, 'insert')
+            # self.worker_message(peer_id, 'insert')
             if id_user != 0:
                 list_favorites = self.apiVK.insert_favorites(id_user, peer_id)
                 if list_favorites is not False:
@@ -172,13 +165,12 @@ class vkBot:
                     message = f"Пользователь был добавлен в какой-то из листов!!!"
                 self.message_id = self.message(peer_id, random_id, message)
                 print(f"ADD_FAVORITES====>{self.message_id}")
+                self.worker_message(peer_id, 'insert')
                 # self.delete_message()
-            print(f"drop fav===>{self.message_id}")
-            self.worker_message(peer_id, 'drop')
+                self.worker_message(peer_id, 'drop')
 
         elif event_command == 'add_blacklist':
             #self.list_message.append(self.message_id)
-            self.worker_message(peer_id, "insert")
             if id_user != 0:
                 list_black = self.apiVK.insert_blacklist(id_user, peer_id)
                 if list_black is not False:
@@ -187,6 +179,7 @@ class vkBot:
                     message = f"Пользователь был добавлен в какой-то из листов!!!"
                 self.message_id = self.message(peer_id, random_id, message)
                 print(f"ADD_BLACKLIST====>{self.message_id}")
+                self.worker_message(peer_id, 'insert')
             #self.delete_message()
             self.worker_message(peer_id, 'drop')
 

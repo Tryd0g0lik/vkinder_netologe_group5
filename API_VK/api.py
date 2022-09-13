@@ -1,5 +1,5 @@
 import vk_api
-from config import TOKEN_API_VK, GROUP_ID
+from config import TOKEN_API_VK
 
 
 class api:
@@ -10,7 +10,6 @@ class api:
         self.vk = self._vk.get_api()
         self.offset = 0
 
-        #self.offset = self.db.offset(self.user_id)
     # Поиск переписывающегося пользователя с ботом и добавление в БД с определёнными критериями поиска
     def user(self, user_id):
         res = self.vk.users.get(user_ids=user_id, fields='country,city,sex,status,bdate')[0]
@@ -114,5 +113,4 @@ class api:
         return self.db.list_elected_user(user_id, 'blacklist')
     # Работа с сообщениями и последним листанием
     def worker_message(self, user_id, message_id, offset, action):
-        id_mess = self.db.worker_message(user_id, message_id, offset, action)
-        return id_mess
+        return self.db.worker_message(user_id, message_id, offset, action)
