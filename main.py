@@ -3,6 +3,7 @@ from vk_api.bot_longpoll import VkBotEventType
 from module.Bot.vkBot import vkBot
 from module.dbBot.sql_requests import sqlTasks, Botdb
 from module.user_token.token_api_vk import token, checkInput
+import os
 
 
 
@@ -29,6 +30,10 @@ class Topmenu:
         response  = ((checkInput())[0]).lower()
 
         if response in "t":
+            # if os.path.isfile(".env"):
+            #     os.remove(".env")
+            # if os.path.isfile("vk_config.json"):
+            #     os.remove("vk_config.json")
             token()
         elif response in "s":
             bot = vkBot()

@@ -5,6 +5,9 @@ import json
 
 import vk_api
 
+from module.keyBot import BasisKey
+
+
 def checkInput():
   while True:
 
@@ -64,9 +67,14 @@ def jsonGeToken():
     token = dict_var[login]["token"]["app6222115"]["scope_FRIEND.STORIES.MESSAGES"]["access_token"]
     id_user = dict_var[login]["token"]["app6222115"]["scope_FRIEND.STORIES.MESSAGES"]["user_id"]
 
-  with open(".env", "a") as file_env:
-    file_env.write(
-      """
+  if not os.path.exists("../../.key"):
+    file = BasisKey()
+    file.keys() # Make '.key' file
+  if os.path.exists("../../.key"):
+
+    with open(".env", "w") as file_env:
+      file_env.write(".key" +
+        """
 
 # User_token for VK
 TOKEN_API_VK = %s
@@ -79,12 +87,10 @@ user_id_user = %s
 
 def token():
 # --------Get token and ID of usser --------
+
+
   if not os.path.exists("vk_config.json"):
     if not os.path.exists("vk_config.v2.json"):
-      if os.path.exists("vk_config.json"):
-        os.remove("vk_config.json")
-      elif os.path.exists("vk_config.v2.json"):
-        os.remove("vk_config.v2.json")
 
       print("Your login and Password!")
       # login, passw = input("Login: "), input("Passw: ")
@@ -100,6 +106,7 @@ def token():
 
   else:
     if not os.path.exists("vk_config.json"):
+
       renameFile()
     jsonGeToken()
 
