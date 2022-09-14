@@ -258,4 +258,4 @@ class vkBot:
                 self.worker_message(peer_id, 'insert')
             if event_command == 'start':# correct
                 return (user, event_command, id_user)# correct
-            return (event_command, id_user) # correct
+            return (event_commandq, id_user) # correct

@@ -17,7 +17,7 @@ def User(func):
 	"""
 	def new_function(self, user_id):
 		res = func(self, user_id)
-		print("111", res)
+		# print("111", res)
 		params = {
 			"id_vk" : res["id"],
 			"first_name" : res["first_name"],
