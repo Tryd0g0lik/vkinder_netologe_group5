@@ -53,6 +53,13 @@ class Topmenu:
                     print(user_id, "params MESSAGE_EVENT: ", params)#correct
                     if params[0] == "add_favorites" or params[0] == "add_blacklist":#correct
                         db.insertElected(user_id=user_id, event_command=params[0], id_elected_user=params[1]) #correct
+                    if type(params) == str and params == "blacklist" or params == "favorites": #correct
+                        if params == "blacklist": #correct
+                            variable_value = 1 #correct
+                        elif params == "favorites": #correct
+                            variable_value = 0 #correct
+                        print(db.public_list(variable_value)) #correct
+
 
 
         elif response in "d":

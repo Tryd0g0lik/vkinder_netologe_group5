@@ -36,6 +36,9 @@ class Botdb():
     self.id_status = id_status
 
   def __start(self):
+    """
+    Open the new session.
+    """
     self.conn = psycopg2.connect(database="vkinder", user=LOGIN_DB, password=PASSWORD_DB)
     self.cur = self.conn.cursor()
 
@@ -210,8 +213,21 @@ class Botdb():
     Botdb.__close(self)
     return params["id_vk"]
 
+  def public_list(self, value_column_name):
+    """
+    :param value_column_name: Integer - which tell about the user status, it is user of the favorite's list or of blacklist
+    :return: The single list of the temples, this contains only unique id user from the lists and a status number.
+     The integer 1 this is a blacklist status and integer 0 - favorite list
+    """
+    Botdb.__start(self)
+    respons = Botdb.__exists(self, "%s"%("elected_users",), "%s"%("id_status",), "%s"%(value_column_name,))
+    Botdb.__close(self)
+    return respons
+
+
+
 class sqlTasks():
-  def __init__(self, dbname,  password = "nlo7"):
+  def __init__(self, dbname,  password = "%s" % ("nlo7", )):
     """
     :param dbname: Receiving database-name and creating base.
     :param password: 'password' variable has from password default the 'nlo7'

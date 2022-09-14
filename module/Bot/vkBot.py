@@ -177,25 +177,27 @@ class vkBot:
 
         elif event_command == 'favorites':
             self.delete_message()
-            message = ''
+            message = '0'
             list_favorite = api().view_favorites(peer_id)
             for item in list_favorite:
-                message += f"https://vk.com/id{item}\n"
-            message = f"Ваши избранные пользователи {len(list_favorite)}:\n{message}"
+                message += f"\nhttps://vk.com/id{item}"   # correct
+            # message = f"Ваши избранные пользователи {len(list_favorite)}:\n{message}" # correct
             self.message_id = self.message(peer_id, random_id, message)
             print(f"FAVORITES====>{self.message_id}")
             self.list_message.append(self.message_id)
 
         elif event_command == 'blacklist':
             self.delete_message()
-            message = ''
+            message = '1'
             list_blacklist = api().view_blacklist(peer_id)
             for item in list_blacklist:
-                message += f"https://vk.com/id{item}\n"
-            message = f"Ваши пользователи из чёрного списка {len(list_blacklist)}:\n{message}"
+                message += f"\nhttps://vk.com/id{item}"       # correct
+            # message = f"Ваши пользователи из чёрного списка {len(list_blacklist)}:\n{message}"    # correct
             self.message_id = self.message(peer_id, random_id, message)
             print(f"BLACKLIST====>{self.message_id}")
             self.list_message.append(self.message_id)
         if event_command == 'start':# correct
             return (user, event_command, id_user)# correct
+        if event_command == 'blacklist' or event_command == "favorites": # correct
+            return (event_command) # correct
         return (event_command, id_user) # correct
