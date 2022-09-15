@@ -4,65 +4,61 @@ from ..dbBot.decoders import User #correct
 
 
 class api:
-
-    def __init__(self, db):
-        self.db = db
+    favorites = []
+    blacklist = []
+    def __init__(self):
         self._vk = vk_api.VkApi(token=TOKEN_API_VK)
         self.vk = self._vk.get_api()
         self.offset = 0
 
     @User  # correct
     def user(self, user_id):
-        res = self.vk.users.get(user_ids=user_id, fields='country,city,sex,status,bdate')[0]
-        filter = self.db.insert_user(res)
-        res['filter'] = filter
+        res = self.vk.users.get(user_ids=user_id, fields=["city"] )[0] # correct
+        self.user_id=user_id
         return res
-    # Листание и поиск пользователей по фильтру
-    def open_user(self, user_id, offset, filters, command='search'):
+
+    def open_user(self, offset, filters, command='search'):
         count = 1
         self.offset = offset
         self.command = command
+
         res = self.vk.users.search(
-            country=filters[0], city=filters[1], sex=filters[2],
-            status=filters[3], age_from=filters[4],
-            age_to=filters[5], has_photo=True, count=count, offset=self.offset)
-        user_in_list = self.db.user_in_list(user_id, res['items'][0]['id'])
-        if user_in_list == 'blacklist' or res['items'][0]['is_closed'] is not False:
-            if self.command == 'search':
+            city=filters[0], sex=filters[1],
+            status=filters[2], age_from=filters[3],
+            age_to=filters[4], has_photo=True, count=count, offset=self.offset)
+
+        if self.command == 'search':
+            if res['items'][0]['is_closed'] is not False:
                 offset += 1
-            elif self.command == 'search_back':
+        elif self.command == 'search_back':
+            if res['items'][0]['is_closed'] is not False:
                 offset -= 1
                 if offset < 0:
                     command = 'search'
                     offset = 0
-            elif self.command == 'search_next':
-                if len(res['items'][0]) > 0:
+        elif self.command == 'search_next':
+            if len(res['items'][0]) > 0:
+                if res['items'][0]['is_closed'] is not False:
                     offset += 1
-                else:
-                    offset -= 1
-
-            if offset < 0:
-                command = 'search'
-                offset = 0
-            return self.open_user(user_id, offset, filters, command)
-        else:
-            if user_in_list == 'favorites':
-                res['star'] = True
             else:
-                res['star'] = False
+                offset -=1
+        if res['items'][0]['is_closed'] is not True:
             res['offset'] = offset
             return res
-    # Фильтр для поиска
-    def search_filter(self, user_id):
-        return self.db.search_filter(user_id)
-    # Поиск людей и 3 фотографий
-    def search_users(self, user_id, offset, filters, command):
+        else:
+            if offset < 0:
+                self.command = 'search'
+                offset = 0
+            return self.open_user(offset, filters, command)
+
+    def search_users(self, offset, filters, command):
+        # city, sex, status, age_from, age_to
         self.command = command
         self.filters = filters
         self.offset = offset
         arr_user = {}
         list_users = []
-        user = self.open_user(user_id, offset, filters, command)
+        user = self.open_user(offset, filters, command)
         res = self.vk.photos.get(
             owner_id=user['items'][0]['id'],
             album_id='profile',
@@ -91,28 +87,30 @@ class api:
         list_users.append(arr_user1)
 
         arr_user['offset'] = user['offset']
-        arr_user['star'] = user['star']
         arr_user['count'] = user['count']
         arr_user['users'] = list_users
         return arr_user
-    # Добавить в лист избранных
-    def insert_favorites(self, id_elected_user, user_id):
-        return self.db.add_elected_user(user_id, id_elected_user, 'favorites')
-    # Добавить в черный список
-    def insert_blacklist(self, id_elected_user, user_id):
-        return self.db.add_elected_user(user_id, id_elected_user, 'blacklist')
-    # Обновить фильтр через строку
-    def update_filter(self, user_id, new_filter):
+
+    def insert_favorites(self, id_user):
+        if id_user not in self.blacklist:
+            self.favorites.append(id_user)
+        return self.favorites
+
+    def insert_blacklist(self, id_user):
+        if id_user not in self.favorites:
+            self.blacklist.append(id_user)
+        return self.blacklist
+
+    def update_filter(self, new_filter):
         self.filter = list(map(int, new_filter.split(',')))
-        self.db.update_search_filter(user_id, self.filter)
         return self.filter
-    # Просмотр листа с избранными пользователями
+
     def view_favorites(self, user_id):
-        return self.db.list_elected_user(user_id, 'favorites')
-    # Просмотр листа с пользователями из чёрного списка
+        #из БД выбрать
+        result = self.favorites
+        return result
+
     def view_blacklist(self, user_id):
-        return self.db.list_elected_user(user_id, 'blacklist')
-    # Работа с сообщениями и последним листанием
-    def worker_message(self, user_id, message_id, offset, action):
-        id_mess = self.db.worker_message(user_id, message_id, offset, action)
-        return id_mess
+        #Из БД выбрать
+        result = self. blacklist
+        return result
