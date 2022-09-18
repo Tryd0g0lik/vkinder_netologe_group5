@@ -9,3 +9,4 @@ vk_config.v2.json
 to /*
 .key
 module/user_token/token_api_vk.py
+module/keyBot.py

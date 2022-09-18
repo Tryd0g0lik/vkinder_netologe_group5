@@ -67,13 +67,15 @@ def jsonGeToken():
     token = dict_var[login]["token"]["app6222115"]["scope_FRIEND.STORIES.MESSAGES"]["access_token"]
     id_user = dict_var[login]["token"]["app6222115"]["scope_FRIEND.STORIES.MESSAGES"]["user_id"]
 
-  if not os.path.exists("../../.key"):
+  if not os.path.exists(".key"):
     file = BasisKey()
     file.keys() # Make '.key' file
-  if os.path.exists("../../.key"):
+  if os.path.exists(".key"):
+    with open(".key", "r") as file_key:
+      fKeys = file_key.read()
 
     with open(".env", "w") as file_env:
-      file_env.write(".key" +
+      file_env.write( fKeys +
         """
 
 # User_token for VK
@@ -97,16 +99,16 @@ def token():
       vk_login = vk_api.VkApi(login, passw)
       vk_login.token['access_token']
 
-    if not os.path.exists("vk_config.json"):
+    if os.path.exists("vk_config.v2.json"):
       renameFile()
 
     jsonGeToken()
 
-  else:
-    if not os.path.exists("vk_config.json"):
-
-      renameFile()
-    jsonGeToken()
+  # else:
+  #   if not os.path.exists("vk_config.json"):
+  #
+  #     renameFile()
+  #   jsonGeToken()
 
 
 class apiFunction:
