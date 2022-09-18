@@ -32,8 +32,8 @@ class Topmenu:
         if response in "t":
             # if os.path.isfile(".env"):
             #     os.remove(".env")
-            # if os.path.isfile("vk_config.json"):
-            #     os.remove("vk_config.json")
+            if os.path.isfile("vk_config.json"):
+                os.remove("vk_config.json")
             token()
         elif response in "s":
             bot = vkBot()

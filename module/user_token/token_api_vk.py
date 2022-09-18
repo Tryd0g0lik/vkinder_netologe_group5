@@ -87,8 +87,6 @@ user_id_user = %s
 
 def token():
 # --------Get token and ID of usser --------
-
-
   if not os.path.exists("vk_config.json"):
     if not os.path.exists("vk_config.v2.json"):
 
