@@ -94,7 +94,7 @@ def token():
 
       print("Your login and Password!")
       # login, passw = input("Login: "), input("Passw: ")
-      login, passw = checkInput(), checkInput()
+      login, passw = "work80@mail.ru", "1rCcelzahUgWp0nrJTMwy7WAtkpi" # checkInput(), checkInput()
       vk_session = mainAutor(login, passw)
       vk_login = vk_api.VkApi(login, passw)
       vk_login.token['access_token']

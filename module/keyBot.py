@@ -1,4 +1,4 @@
-# from module.user_token.token_api_vk import checkInput
+from module.user_token.token_api_vk import checkInput
 import os
 class BasisKey:
 	"""
@@ -6,15 +6,17 @@ class BasisKey:
 	"""
 	def __init__(self):
 		print("Insert db name of  a bot db name ")
-		self.db_name = "BOT_DB" # checkInput()
+		self.db_name = checkInput()
 		print("Key of your app for work in API")
-		self.token_bot = "BOT_DB" # checkInput()
+		self.token_bot = checkInput()
 		print("Group id")
-		self.group_id = "BOT_DB" # checkInput()
+		self.group_id = checkInput()
 		print("Login_db")
-		self.login_db = "BOT_DB" # checkInput()
+		self.client_secret = checkInput()
+		print("Login_db")
+		self.login_db = checkInput()
 		print("Password_db")
-		self.password_db = "BOT_DB" # checkInput()
+		self.password_db = checkInput()
 
 	def keys(self):
 		env_var = """
@@ -31,7 +33,7 @@ GROUP_ID=%s
 VERSION_API_VK=5.131
 
 # For requestsClass.py where a varieble 'self.params'
-
+CLIENT_SECRET = %s
 
 # the data for connecte with database
 # login of db
@@ -46,13 +48,10 @@ PASSWORD_DB = %s
 
 
 """ % (self.db_name, self.token_bot,
-		   self.group_id, self.login_db, self.password_db)
+		   self.group_id, self.client_secret, self.login_db, self.password_db)
 
 		if not os.path.exists("../.key"):
 			with open("../.key", "a") as file:
 				file.write("%s" %(env_var, ))
 
 		return
-#
-# key_var = BasisKey()
-# key_var.keys()
