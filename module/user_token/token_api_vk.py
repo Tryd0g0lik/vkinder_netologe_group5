@@ -1,11 +1,11 @@
-# from module.user_token.token_api_vk import mainAutor, renameFile
+# from module.user_token.token_api_vk import renameFile
 import os
 import json
 
 
 import vk_api
 
-from module.keyBot import BasisKey
+# from module.keyBot import BasisKey
 
 
 def checkInput():
@@ -68,6 +68,7 @@ def jsonGeToken():
     id_user = dict_var[login]["token"]["app6222115"]["scope_FRIEND.STORIES.MESSAGES"]["user_id"]
 
   if not os.path.exists(".key"):
+    from module.keyBot import BasisKey
     file = BasisKey()
     file.keys() # Make '.key' file
   if os.path.exists(".key"):

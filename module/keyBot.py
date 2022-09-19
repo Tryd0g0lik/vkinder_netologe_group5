@@ -32,7 +32,7 @@ GROUP_ID=%s
 # Version for the Api Vk
 VERSION_API_VK=5.131
 
-# For requestsClass.py where a varieble 'self.params'
+# Защищённый ключ
 CLIENT_SECRET = %s
 
 # the data for connecte with database
